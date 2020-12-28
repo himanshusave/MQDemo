@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:int="http://www.springframework.org/schema/integration"
+	xmlns:int-http="http://www.springframework.org/schema/integration/http"
+	xsi:schemaLocation="
+    http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/integration
+    http://www.springframework.org/schema/integration/spring-integration.xsd
+    http://www.springframework.org/schema/integration/http
+    http://www.springframework.org/schema/integration/http/spring-integration-http.xsd">
+    
+    <int:channel id="moduleBInChannel"/>
+    
+    <int:channel id="moduleBOutChannel"/>
+
+	<int-http:inbound-channel-adapter
+		channel="moduleBInChannel" supported-methods="POST" path="/invokeB" 
+		request-payload-type="com.mqtest.ModuleHelper.RequestB">
+		<int-http:request-mapping consumes="application/json" />
+	</int-http:inbound-channel-adapter>
+
+	<int:service-activator ref="serviceB" method="invoke" input-channel="moduleBInChannel" output-channel="moduleBOutChannel"/>
+	
+	<int-http:outbound-channel-adapter
+		url="http://localhost:8080/ModuleC/invokeC"
+		http-method="POST" channel="moduleBOutChannel" charset="UTF-8"
+		extract-payload="true" message-converters=""/>
+	
+	<int:channel id="moduleBRespFromCChannel"/>
+    
+	<int-http:inbound-channel-adapter
+		channel="moduleBRespFromCChannel" supported-methods="POST" path="/receiveC" 
+		request-payload-type="com.mqtest.ModuleHelper.ResponseC">
+		<int-http:request-mapping consumes="application/json" />
+	</int-http:inbound-channel-adapter>
+
+	<int:service-activator ref="serviceB" method="receiveC" input-channel="moduleBRespFromCChannel"/>
+	
+	
+</beans>

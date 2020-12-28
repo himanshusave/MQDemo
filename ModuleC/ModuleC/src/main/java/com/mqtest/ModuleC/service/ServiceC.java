@@ -16,10 +16,8 @@ public class ServiceC {
 		System.out.println("Generating Response...");
 		ResponseC resp = new ResponseC();
 		resp.setRespC(request.getC()*10);
-		System.out.println("Response Generated");
+		System.out.println("Response Generated in Service C : " +resp);
 		return resp;
-		
-		
 	}
 
 }

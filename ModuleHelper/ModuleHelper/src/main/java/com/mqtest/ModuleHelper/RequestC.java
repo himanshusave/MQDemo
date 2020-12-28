@@ -16,4 +16,10 @@ public class RequestC implements Serializable{
 		this.c = c;
 	}
 
+	@Override
+	public String toString() {
+		return "RequestC [c=" + c + "]";
+	}
+
+	
 }

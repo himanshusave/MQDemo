@@ -13,12 +13,12 @@ import com.mqtest.ModuleHelper.ResponseB;
 @RestController
 public class ControllerB {
 	
-	@Autowired
+	/*@Autowired
 	ServiceB service;
 	
 	@RequestMapping(value="/invokeB" , method=RequestMethod.POST)
 	public ResponseB invokeB(@RequestBody RequestB request) throws InterruptedException {
 		return service.invoke(request);
-	}
+	}*/
 
 }
