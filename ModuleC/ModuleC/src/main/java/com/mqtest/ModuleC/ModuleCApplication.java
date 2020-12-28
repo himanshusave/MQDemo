@@ -8,7 +8,7 @@ import org.springframework.context.annotation.ImportResource;
 import org.springframework.messaging.SubscribableChannel;
 
 @SpringBootApplication
-@ImportResource("classpath:http-integration-config.xml")
+@ImportResource("classpath:ModuleC-integration-config.xml")
 public class ModuleCApplication extends SpringBootServletInitializer{
 	
 	@Autowired

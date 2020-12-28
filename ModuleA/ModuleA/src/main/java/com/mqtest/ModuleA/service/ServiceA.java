@@ -23,12 +23,11 @@ public class ServiceA {
 		return reqB;
 	}
 	
-	public ResponseB receiveB(ResponseB response) {
+	public void receiveB(ResponseB response) {
 		
 		System.out.println("Inside Service A : received response from Module B");
 		System.out.println("Got Response from API B : "+response.getRespB());
 		System.out.println("Response Generated : " +response);
-		return response;
 		
 	}
 

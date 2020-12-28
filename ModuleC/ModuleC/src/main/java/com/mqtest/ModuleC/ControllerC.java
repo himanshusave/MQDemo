@@ -13,13 +13,13 @@ import com.mqtest.ModuleHelper.ResponseC;
 @RestController
 public class ControllerC {
 	
-	@Autowired
+	/*@Autowired
 	private ServiceC service;
 	
 	@RequestMapping(value="/invokeC",method=RequestMethod.POST)
 	public ResponseC invokeC(@RequestBody RequestC request) throws InterruptedException {
 		return service.invoke(request);
-	}
+	}*/
 	
 
 }

@@ -16,4 +16,9 @@ public class ResponseB implements Serializable{
 		this.respB = respB;
 	}
 
+	@Override
+	public String toString() {
+		return "ResponseB [respB=" + respB + "]";
+	}
+
 }
