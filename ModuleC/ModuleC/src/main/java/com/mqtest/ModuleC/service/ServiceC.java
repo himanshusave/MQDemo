@@ -1,5 +1,6 @@
 package com.mqtest.ModuleC.service;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.mqtest.ModuleHelper.RequestC;
@@ -8,11 +9,16 @@ import com.mqtest.ModuleHelper.ResponseC;
 @Service
 public class ServiceC {
 	
+	@Value("${sleep.time}")
+	private String sleepTime;
+	
 	public ResponseC invoke(RequestC request) throws InterruptedException {
 		
 		System.out.println("Inside service C");
 		System.out.println("Received request : " + request);
-		Thread.sleep(1000);
+		
+		System.out.println("Going to sleep for "+ sleepTime + " milliseconds");
+		Thread.sleep(Long.valueOf(sleepTime));
 		System.out.println("Generating Response...");
 		ResponseC resp = new ResponseC();
 		resp.setRespC(request.getC()*10);

@@ -28,7 +28,7 @@
 		http-method="POST" channel="moduleBOutChannel" charset="UTF-8"
 		extract-payload="true" message-converters=""/>
 	
-	<int:channel id="moduleBRespFromCChannel"/>
+	<!-- <int:channel id="moduleBRespFromCChannel"/>
 	
 	<int:channel id="moduleBSendRespToAChannel"/>
     
@@ -43,7 +43,7 @@
 	<int-http:outbound-channel-adapter
 		url="http://localhost:8080/ModuleA/receiveB"
 		http-method="POST" channel="moduleBSendRespToAChannel" charset="UTF-8"
-		extract-payload="true" message-converters=""/>
+		extract-payload="true" message-converters=""/> -->
 	
 	
 </beans>

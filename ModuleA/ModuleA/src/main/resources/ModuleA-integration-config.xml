@@ -29,15 +29,15 @@
 		http-method="POST" channel="moduleAOutboundChannel" charset="UTF-8"
 		extract-payload="true" message-converters=""/>
     
-    <int:channel id="moduleARespFromBChannel"/>
+    <int:channel id="moduleARespFromCChannel"/>
     
 	<int-http:inbound-channel-adapter
-		channel="moduleARespFromBChannel" supported-methods="POST" path="/receiveB" 
-		request-payload-type="com.mqtest.ModuleHelper.ResponseB">
+		channel="moduleARespFromCChannel" supported-methods="POST" path="/receive" 
+		request-payload-type="com.mqtest.ModuleHelper.ResponseC">
 		<int-http:request-mapping consumes="application/json" />
 	</int-http:inbound-channel-adapter>
 
-	<int:service-activator ref="serviceA" method="receiveB" input-channel="moduleARespFromBChannel"/>
+	<int:service-activator ref="serviceA" method="receive" input-channel="moduleARespFromCChannel"/>
 	
 		
 </beans>

@@ -24,7 +24,7 @@
 	<int:service-activator ref="serviceC" method="invoke" input-channel="moduleCInChannel" output-channel="moduleCOutChannel"/>
 	
 	<int-http:outbound-channel-adapter
-		url="http://localhost:8080/ModuleB/receiveC"
+		url="http://localhost:8080/ModuleA/receive"
 		http-method="POST" channel="moduleCOutChannel" charset="UTF-8"
 		extract-payload="true" message-converters=""/>
 		
