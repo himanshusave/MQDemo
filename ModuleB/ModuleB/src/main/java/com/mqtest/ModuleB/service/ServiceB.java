@@ -20,7 +20,9 @@ public class ServiceB {
 		System.out.println("Going to sleep for " + sleepTime + " milliseconds");
 		Thread.sleep(Long.valueOf(sleepTime));
 		RequestC reqC = new RequestC();
-		reqC.setC(request.getB()*10);
+		reqC.setA(request.getA());
+		reqC.setB(request.getA()*10);
+		reqC.setRunId(request.getRunId());
 		System.out.println("Creating request for Module C :" + reqC);
 		System.out.println("Invoking Module C");
 		return reqC;

@@ -1,43 +1,53 @@
 package com.mqtest.ModuleA;
 
-import javax.jms.Queue;
+import java.time.Duration;
+import java.time.Instant;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jms.core.JmsTemplate;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 
 import com.mqtest.ModuleA.service.ServiceA;
+import com.mqtest.ModuleHelper.RequestA;
+import com.mqtest.ModuleHelper.ResponseC;
 
 @RestController
 public class ControllerA {
 	
 	@Autowired
 	private ServiceA service;
+	private RestTemplate restTemplate = new RestTemplate();
 	
-	/*@RequestMapping(value="/invokeA", method = RequestMethod.POST)
-	public void invokeA(@RequestBody RequestA request) throws InterruptedException {
-		service.invoke(request);
+	@RequestMapping(value="/testFile", method = RequestMethod.POST)
+	public void invokeA(@RequestBody ResponseC response) throws InterruptedException {
+		service.receive(response);
 	}
 	
 	@RequestMapping(value="/invokeMultiple/{endIndex}", method = RequestMethod.POST)
 	public String invokeMulti(@PathVariable("endIndex") long endIndex) throws InterruptedException {
 		
+		System.out.println("Controller A invoked");
+		String runId = service.generateRunId();
+		service.writeToFile(service.getCurrentTime() + " Started File Generation", runId);
 		Instant start = Instant.now();
 		long startIndex = 1;
-		StringBuilder sb = new StringBuilder();
 		while (startIndex<=endIndex) {
 			RequestA req = new RequestA();
 			req.setA(startIndex);
-			ResponseA resp = service.invoke(req);
-			sb.append(resp.getRespA()+"\n");
+			req.setRunId(runId);
+			restTemplate.postForObject("http://localhost:8080/ModuleA/invokeA", req, Void.class);
 			startIndex++;
 		}
 		Instant end = Instant.now();
-		System.out.println("Time taken : " + Duration.between(start, end));
-		return sb.toString();
+		Duration timeTaken = Duration.between(start, end);
+		System.out.println("Time taken : " + timeTaken);
+		return "Successfully pushed all records in : " + timeTaken;
 		
-	}*/
+	}
+	
 
 }

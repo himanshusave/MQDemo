@@ -20,8 +20,12 @@ public class ServiceC {
 		System.out.println("Going to sleep for "+ sleepTime + " milliseconds");
 		Thread.sleep(Long.valueOf(sleepTime));
 		System.out.println("Generating Response...");
+		request.setC(request.getB()*10);
 		ResponseC resp = new ResponseC();
-		resp.setRespC(request.getC()*10);
+		resp.setA(request.getA());
+		resp.setB(request.getB());
+		resp.setC(request.getC());
+		resp.setRunId(request.getRunId());
 		System.out.println("Response Generated in Service C : " +resp);
 		return resp;
 	}
