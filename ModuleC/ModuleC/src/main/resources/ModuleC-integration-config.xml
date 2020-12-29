@@ -3,29 +3,54 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:int="http://www.springframework.org/schema/integration"
 	xmlns:int-http="http://www.springframework.org/schema/integration/http"
+	xmlns:jms="http://www.springframework.org/schema/integration/jms"
 	xsi:schemaLocation="
     http://www.springframework.org/schema/beans
     http://www.springframework.org/schema/beans/spring-beans.xsd
     http://www.springframework.org/schema/integration
     http://www.springframework.org/schema/integration/spring-integration.xsd
     http://www.springframework.org/schema/integration/http
-    http://www.springframework.org/schema/integration/http/spring-integration-http.xsd">
-    
-    <int:channel id="moduleCInChannel"/>
-    
-    <int:channel id="moduleCOutChannel"/>
+    http://www.springframework.org/schema/integration/http/spring-integration-http.xsd
+    http://www.springframework.org/schema/integration/jms
+    http://www.springframework.org/schema/integration/jms/spring-integration-jms.xsd">
 
-	<int-http:inbound-channel-adapter
-		channel="moduleCInChannel" supported-methods="POST" path="/invokeC" 
-		request-payload-type="com.mqtest.ModuleHelper.RequestC">
-		<int-http:request-mapping consumes="application/json" />
-	</int-http:inbound-channel-adapter>
+	<int:channel id="moduleCInChannel" />
 
-	<int:service-activator ref="serviceC" method="invoke" input-channel="moduleCInChannel" output-channel="moduleCOutChannel"/>
+	<int:channel id="moduleCOutChannel" />
+
+	<bean id="connectionFactory"
+		class="org.apache.activemq.ActiveMQConnectionFactory">
+		<property name="brokerURL" value="${active-mq-url}" />
+		<property name="trustedPackages">
+			<list>
+				<value>com.mqtest.ModuleHelper</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="bToCQ" class="org.apache.activemq.command.ActiveMQQueue">
+		<constructor-arg value="ModuleBToCQueue" />
+	</bean>
 	
-	<int-http:outbound-channel-adapter
-		url="http://localhost:8080/ModuleA/receive"
-		http-method="POST" channel="moduleCOutChannel" charset="UTF-8"
-		extract-payload="true" message-converters=""/>
-		
+	<bean id="respQ" class="org.apache.activemq.command.ActiveMQQueue">
+		<constructor-arg value="responseQueue" />
+	</bean>
+	
+	<jms:message-driven-channel-adapter
+		id="jmsIn" channel="moduleCInChannel"
+		connection-factory="connectionFactory" destination="bToCQ" />
+
+	<int:service-activator ref="serviceC"
+		method="invoke" input-channel="moduleCInChannel"
+		output-channel="moduleCOutChannel" />
+
+	<bean id="jmsTemplate"
+		class="org.springframework.jms.core.JmsTemplate">
+		<constructor-arg ref="connectionFactory"></constructor-arg>
+	</bean>
+
+	<jms:outbound-channel-adapter
+		id="JMSOutboundAdapter" channel="moduleCOutChannel"
+		jms-template="jmsTemplate" destination="respQ" />
+
 </beans>

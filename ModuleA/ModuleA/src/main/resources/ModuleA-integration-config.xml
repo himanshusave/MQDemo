@@ -3,41 +3,68 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:int="http://www.springframework.org/schema/integration"
 	xmlns:int-http="http://www.springframework.org/schema/integration/http"
+	xmlns:jms="http://www.springframework.org/schema/integration/jms"
 	xsi:schemaLocation="
     http://www.springframework.org/schema/beans
     http://www.springframework.org/schema/beans/spring-beans.xsd
     http://www.springframework.org/schema/integration
     http://www.springframework.org/schema/integration/spring-integration.xsd
     http://www.springframework.org/schema/integration/http
-    http://www.springframework.org/schema/integration/http/spring-integration-http.xsd">
-    
-    
-    <int:channel id="moduleAInboundChannel"/>
-    
-    <int:channel id="moduleAOutboundChannel"/>
-    
-    <int-http:inbound-channel-adapter
+    http://www.springframework.org/schema/integration/http/spring-integration-http.xsd
+    http://www.springframework.org/schema/integration/jms
+    http://www.springframework.org/schema/integration/jms/spring-integration-jms.xsd">
+
+
+	<int:channel id="moduleAInboundChannel" />
+
+	<int:channel id="moduleAOutboundChannel" />
+
+	<bean id="myqueue"
+		class="org.apache.activemq.command.ActiveMQQueue">
+		<constructor-arg value="ModuleAToBQueue" />
+	</bean>
+
+	<bean id="jmsTemplate"
+		class="org.springframework.jms.core.JmsTemplate">
+		<constructor-arg ref="connectionFactory"></constructor-arg>
+	</bean>
+
+	<bean id="connectionFactory"
+		class="org.apache.activemq.ActiveMQConnectionFactory">
+		<property name="brokerURL" value="${active-mq-url}" />
+		<property name="trustedPackages">
+			<list>
+				<value>com.mqtest.ModuleHelper</value>
+			</list>
+		</property>
+	</bean>
+	
+	<int-http:inbound-channel-adapter
 		channel="moduleAInboundChannel" supported-methods="POST" path="/invokeA" 
 		request-payload-type="com.mqtest.ModuleHelper.RequestA">
 		<int-http:request-mapping consumes="application/json" />
 	</int-http:inbound-channel-adapter>
-	
-	<int:service-activator ref="serviceA" method="invoke" input-channel="moduleAInboundChannel" output-channel="moduleAOutboundChannel"/>
-	
-	<int-http:outbound-channel-adapter
-		url="http://localhost:8080/ModuleB/invokeB"
-		http-method="POST" channel="moduleAOutboundChannel" charset="UTF-8"
-		extract-payload="true" message-converters=""/>
-    
-    <int:channel id="moduleARespFromCChannel"/>
-    
-	<int-http:inbound-channel-adapter
-		channel="moduleARespFromCChannel" supported-methods="POST" path="/receive" 
-		request-payload-type="com.mqtest.ModuleHelper.ResponseC">
-		<int-http:request-mapping consumes="application/json" />
-	</int-http:inbound-channel-adapter>
 
-	<int:service-activator ref="serviceA" method="receive" input-channel="moduleARespFromCChannel"/>
-	
-		
+	<jms:outbound-channel-adapter
+		id="JMSOutboundAdapter" channel="moduleAOutboundChannel"
+		jms-template="jmsTemplate" destination="myqueue" />
+
+	<int:service-activator ref="serviceA"
+		method="invoke" input-channel="moduleAInboundChannel"
+		output-channel="moduleAOutboundChannel" />
+
+	<int:channel id="moduleARespFromCChannel" />
+
+	<bean id="respQ" class="org.apache.activemq.command.ActiveMQQueue">
+		<constructor-arg value="responseQueue" />
+	</bean>
+
+	<jms:message-driven-channel-adapter
+		id="responseIn" channel="moduleARespFromCChannel"
+		connection-factory="connectionFactory" destination="respQ" />
+
+	<int:service-activator ref="serviceA"
+		method="receive" input-channel="moduleARespFromCChannel" />
+
+
 </beans>
