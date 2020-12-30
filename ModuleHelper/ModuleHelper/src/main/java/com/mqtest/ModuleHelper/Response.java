@@ -34,5 +34,11 @@ public class Response implements Serializable{
 	public void setRunId(String runId) {
 		this.runId = runId;
 	}
+	@Override
+	public String toString() {
+		return "Response [data=" + data + ", runId=" + runId + ", errorMsg=" + errorMsg + ", headerMsg=" + headerMsg
+				+ "]";
+	}
 
+	
 }
