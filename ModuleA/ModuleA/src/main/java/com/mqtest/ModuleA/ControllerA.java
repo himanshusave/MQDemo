@@ -35,7 +35,11 @@ public class ControllerA {
 			RequestA req = new RequestA();
 			req.setA(startIndex);
 			ResponseA resp = service.invoke(req);
-			sb.append(resp.getRespA()+"\n");
+			if(null!=resp) {
+				sb.append(resp.getRespA()+"\n");
+			}else {
+				sb.append("Error\n");
+			}
 			startIndex++;
 		}
 		Instant end = Instant.now();
