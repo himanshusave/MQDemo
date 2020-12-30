@@ -9,6 +9,7 @@ public class ResponseB implements Serializable{
 	private long a;
 	private long b;
 	private long respB;
+	private String runId;
 	private String error;
 
 	public long getRespB() {
@@ -43,9 +44,17 @@ public class ResponseB implements Serializable{
 		this.error = error;
 	}
 
+	public String getRunId() {
+		return runId;
+	}
+
+	public void setRunId(String runId) {
+		this.runId = runId;
+	}
+
 	@Override
 	public String toString() {
-		return "ResponseB [a=" + a + ", b=" + b + ", respB=" + respB + "]";
+		return "ResponseB [a=" + a + ", b=" + b + ", respB=" + respB + ", runId=" + runId + ", error=" + error + "]";
 	}
 
 }

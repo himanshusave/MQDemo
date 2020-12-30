@@ -8,7 +8,6 @@ public class RequestB implements Serializable{
 	
 	private long a;
 	private long b;
-	private String runId;
 
 	public long getB() {
 		return b;
@@ -26,17 +25,9 @@ public class RequestB implements Serializable{
 		this.a = a;
 	}
 
-	public String getRunId() {
-		return runId;
-	}
-
-	public void setRunId(String runId) {
-		this.runId = runId;
-	}
-
 	@Override
 	public String toString() {
-		return "RequestB [a=" + a + ", b=" + b + ", runId=" + runId + "]";
+		return "RequestB [a=" + a + ", b=" + b + "]";
 	}
 	
 }

@@ -9,7 +9,6 @@ public class RequestC implements Serializable{
 	private long a;
 	private long b;
 	private long c;
-	private String runId;
 
 	public long getC() {
 		return c;
@@ -35,17 +34,9 @@ public class RequestC implements Serializable{
 		this.b = b;
 	}
 
-	public String getRunId() {
-		return runId;
-	}
-
-	public void setRunId(String runId) {
-		this.runId = runId;
-	}
-
 	@Override
 	public String toString() {
-		return "RequestC [a=" + a + ", b=" + b + ", c=" + c + ", runId=" + runId + "]";
+		return "RequestC [a=" + a + ", b=" + b + ", c=" + c + "]";
 	}
 
 }

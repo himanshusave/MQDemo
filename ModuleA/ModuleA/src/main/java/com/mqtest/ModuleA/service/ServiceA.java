@@ -15,10 +15,13 @@ import java.util.Date;
 import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.messaging.Message;
 import org.springframework.stereotype.Service;
 
 import com.mqtest.ModuleHelper.RequestA;
 import com.mqtest.ModuleHelper.RequestB;
+import com.mqtest.ModuleHelper.Response;
+import com.mqtest.ModuleHelper.ResponseB;
 import com.mqtest.ModuleHelper.ResponseC;
 
 @Service
@@ -29,7 +32,7 @@ public class ServiceA {
 	private static final Random random = new Random();
 	private DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:sss");
 
-	public RequestB invoke(RequestA request) throws InterruptedException {
+	public Response invoke(RequestA request) throws InterruptedException {
 
 		System.out.println("Inside service A");
 		System.out.println("Received request : " + request);
@@ -38,26 +41,36 @@ public class ServiceA {
 		Thread.sleep(Long.valueOf(sleepTime));
 		RequestB reqB = new RequestB();
 		reqB.setA(request.getA());
-		reqB.setRunId(request.getRunId());
+		Response response = new Response();
+		response.setRunId(request.getRunId());
+		response.setData(reqB);
 		System.out.println("Creating Request for Module B");
 		System.out.println("Request Created is : " + reqB);
 		System.out.println(reqB);
 		System.out.println("Invoking Module B");
-		return reqB;
+		return response;
 	}
 
-	public void receive(ResponseC response) {
+	public void receive(Message<Response> message) {
 
-		System.out.println("Inside Service A : received response from Module C");
-		System.out.println("Response Generated : " + response);
-		String fileName = response.getRunId();
-		writeToFile(createLogMsg(response), fileName);
+		Response responseReceived = message.getPayload();
+		System.out.println("Inside Service A : received response");
+		String fileName = responseReceived.getRunId();
+		writeToFile(createLogMsg(responseReceived), fileName);
 	}
 
-	private String createLogMsg(ResponseC response) {
+	private String createLogMsg(Response response) {
 
-		String msg = getCurrentTime() + " ResponseC [a=" + response.getA() + ", b="
-				+ response.getB() + ", c=" + response.getC() + "]";
+		String msg = null;
+		
+		if(response.getData() instanceof ResponseC) {
+			ResponseC resp = (ResponseC)response.getData();
+			msg = " ResponseC [a=" + resp.getA() + ", b="+ resp.getB() + ", c=" + resp.getC() + "]";
+		}else if(response.getData() instanceof ResponseB) {
+			ResponseB resp = (ResponseB)response.getData();
+			msg = " ResponseB [a=" +resp.getA()+ ", b=" + resp.getB()+"] Error : " + response.getErrorMsg();
+		}
+		msg = getCurrentTime() + msg;
 		System.out.println(msg);
 		return msg;
 

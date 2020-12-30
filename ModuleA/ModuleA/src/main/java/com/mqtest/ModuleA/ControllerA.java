@@ -5,7 +5,6 @@ import java.time.Instant;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,19 +12,14 @@ import org.springframework.web.client.RestTemplate;
 
 import com.mqtest.ModuleA.service.ServiceA;
 import com.mqtest.ModuleHelper.RequestA;
-import com.mqtest.ModuleHelper.ResponseC;
 
 @RestController
 public class ControllerA {
 	
 	@Autowired
 	private ServiceA service;
-	private RestTemplate restTemplate = new RestTemplate();
 	
-	@RequestMapping(value="/testFile", method = RequestMethod.POST)
-	public void invokeA(@RequestBody ResponseC response) throws InterruptedException {
-		service.receive(response);
-	}
+	private RestTemplate restTemplate = new RestTemplate();
 	
 	@RequestMapping(value="/invokeMultiple/{endIndex}", method = RequestMethod.POST)
 	public String invokeMulti(@PathVariable("endIndex") long endIndex) throws InterruptedException {

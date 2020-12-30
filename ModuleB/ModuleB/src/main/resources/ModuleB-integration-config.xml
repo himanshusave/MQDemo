@@ -18,6 +18,10 @@
     
     <int:channel id="moduleBOutChannel"/>
     
+    <int:channel id="moduleBToCChannel"/>
+    
+    <int:channel id="responseChannel"/>
+    
     <bean id="connectionFactory"
 		class="org.apache.activemq.ActiveMQConnectionFactory">
 		<property name="brokerURL" value="${active-mq-url}" />
@@ -35,10 +39,29 @@
 	<bean id="myqueue2" class="org.apache.activemq.command.ActiveMQQueue">
 		<constructor-arg value="ModuleBToCQueue" />
 	</bean>
+	
+	<bean id="respQ" class="org.apache.activemq.command.ActiveMQQueue">
+		<constructor-arg value="responseQueue" />
+	</bean>
     
     <jms:message-driven-channel-adapter id="jmsIn" channel="moduleBInChannel" connection-factory="connectionFactory" destination="myqueue"/>
 
 	<int:service-activator ref="serviceB" method="invoke" input-channel="moduleBInChannel" output-channel="moduleBOutChannel"/>
+	
+	<int:header-enricher input-channel="moduleBOutChannel"
+		output-channel="moduleBOutChannel2">
+		<int:header name="PROCESSING_RESULT" expression="payload" />
+	</int:header-enricher>
+	
+	<int:recipient-list-router input-channel="moduleBOutChannel2"
+		apply-sequence="true">
+		<int:recipient
+			selector-expression="payload.headerMsg eq 'HM_SUCCESS'"
+			channel="moduleBToCChannel" />
+		<int:recipient
+			selector-expression="payload.headerMsg eq 'HM_FAILED'"
+			channel="responseChannel" />
+	</int:recipient-list-router>
 	
 	<bean id="jmsTemplate"
 		class="org.springframework.jms.core.JmsTemplate">
@@ -46,7 +69,12 @@
 	</bean>
 	
 	<jms:outbound-channel-adapter
-		id="JMSOutboundAdapter" channel="moduleBOutChannel"
+		id="JMSOutboundAdapter" channel="moduleBToCChannel"
 		jms-template="jmsTemplate" destination="myqueue2"/>
+	
+	<jms:outbound-channel-adapter
+		id="JMSReponseAdapter" channel="responseChannel"
+		jms-template="jmsTemplate" destination="respQ"/>
+		
 	
 </beans>
